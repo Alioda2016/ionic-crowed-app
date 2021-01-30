@@ -1,0 +1,29 @@
+.home{
+  --ion-background-color: #63254E;
+  --background-color: transparent;
+  --background: none;
+  background-image: url(../../assets/images/background-image.png);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 95%;
+  background-color: #63254E;
+}
+
+.button-bttn{
+  --background: #E66F51;
+  position: fixed;
+  color: #941E30;
+  left: 0;
+  bottom: 5%;
+  right: 0;
+  font-size: large;
+}
+
+.welcomming{
+  color: #E9C36A;
+  font-size: x-large;
+  position: fixed;
+  left: 25%;
+  right: 25%;
+  bottom: 65%;
+}

@@ -1,0 +1,24 @@
+
+<ion-content class="sign-in">
+  <form #form="ngForm" (ngSubmit)="login(form)">
+    <ion-grid class="grid">
+      <ion-row  justify-content-center>
+        <ion-col align-self-center size-md="6" size-lg="5" size-xs="12">
+          <ion-item-divider></ion-item-divider>
+          <div padding>
+            <ion-item>
+              <ion-input name="username" type="text" placeholder="Username" ngModel required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input name="password" type="password" placeholder="Password"  ngModel required></ion-input>
+            </ion-item>
+          </div>
+          <ion-item-divider></ion-item-divider>
+          <div padding>
+            <ion-button size="large" type="submit" slot="bottom" [disabled]="form.invalid" expand="block">Sign In</ion-button>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar class="toolbar">
+    <ion-button (click)="navigateBack()" class="button-bttn">
+      <ion-icon name="arrow-back-outline" size="large" class="icon"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content class="login-page">
+  <ion-tabs>
+    <!-- Tab bar -->
+    <ion-tab-bar slot="top" class="tabs">
+  
+      <ion-tab-button tab="sign-in" class="button-bttn" (click)="login()">
+        <ion-label>
+          <strong>SIGN IN</strong>
+        </ion-label>
+      </ion-tab-button>
+  
+      <ion-tab-button tab="sign-up" class="button-bttn" (click)="join()">
+        <ion-label>
+          <strong>SIGN UP</strong>
+        </ion-label>
+      </ion-tab-button>
+    </ion-tab-bar>
+  </ion-tabs>
+</ion-content>
