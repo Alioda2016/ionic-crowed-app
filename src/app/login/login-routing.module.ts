@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { AuthGuardService } from '../home/auth-guard.service';
 
 import { LoginPage } from './login.page';
 
@@ -40,7 +41,8 @@ const routes: Routes = [
   },
   {
     path: 'search-place',
-    loadChildren: () => import('./search-place/search-place.module').then( m => m.SearchPlacePageModule)
+    loadChildren: () => import('./search-place/search-place.module').then( m => m.SearchPlacePageModule),
+    // canActivate: [AuthGuardService]
   }
 ];
 
