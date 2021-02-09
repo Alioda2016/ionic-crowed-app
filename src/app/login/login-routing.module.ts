@@ -42,7 +42,7 @@ const routes: Routes = [
   {
     path: 'search-place',
     loadChildren: () => import('./search-place/search-place.module').then( m => m.SearchPlacePageModule),
-    // canActivate: [AuthGuardService]
+     canActivate: [AuthGuardService]
   }
 ];
 

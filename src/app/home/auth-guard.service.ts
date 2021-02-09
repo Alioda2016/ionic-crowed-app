@@ -6,21 +6,25 @@ import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
 })
 export class AuthGuardService implements CanActivate {
 
+   
+   authInfo =  {
+    authenticated: false
+  };
+
   constructor(private router: Router) { }
+
+  setAuthInfo(b: boolean){
+    this.authInfo.authenticated = b;
+  }
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
     console.log(route);
-    
-    let authInfo =  {
-      authenticated: false
-    }
 
-    if(!authInfo.authenticated){
+    if(!this.authInfo.authenticated){
       this.router.navigate(["home"]);
       return false;
     }
-
-    console.log(authInfo.authenticated);
+    console.log(this.authInfo.authenticated);
     
     return true;
   }

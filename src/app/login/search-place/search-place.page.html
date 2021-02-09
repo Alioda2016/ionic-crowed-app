@@ -5,6 +5,9 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-searchbar placeholder="search-place"></ion-searchbar>
+    <ion-button slot="end" size="small" (click)="logOut()"> 
+      <ion-icon name="log-out-outline" size="small"></ion-icon>
+    </ion-button>
   </ion-toolbar>
 </ion-header>
 
@@ -14,16 +17,18 @@
 
 <ion-tabs>
   <ion-tab-bar slot="bottom" class="tabs">
-    <ion-tab-button tab="schedule">
-      <Strong>Percentage</Strong>
+    <ion-tab-button>
+      <ion-icon name="play-forward" size="small"></ion-icon>
+      <Strong>Direction</Strong>
     </ion-tab-button>
-
-    <ion-tab-button tab="speakers">
+    <ion-tab-button (click)="navigate()">
+      <ion-icon name="navigate" size="small"></ion-icon>
       <Strong>Navigation</Strong>
     </ion-tab-button>
 
-    <ion-tab-button tab="map">
-      <Strong>Direction</Strong>
+    <ion-tab-button (click)="setPercentage()">
+      <ion-icon name="people" size="small"></ion-icon>
+      <Strong>Percentage</Strong>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>

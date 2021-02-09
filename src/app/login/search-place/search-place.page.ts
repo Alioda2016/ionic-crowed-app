@@ -1,4 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 
 
 declare var google: any;
@@ -9,7 +11,7 @@ declare var google: any;
   styleUrls: ['./search-place.page.scss'],
 })
 
-export class SearchPlacePage implements OnInit {
+export class SearchPlacePage{
 
   map: any;
 
@@ -19,35 +21,17 @@ export class SearchPlacePage implements OnInit {
 
   markers: any = [
     {
-        title: "National Art Gallery",
-        latitude: "-17.824991",
-        longitude: "31.049295"
-    },
-    {
-        title: "West End Hospital",
-        latitude: "-17.820987",
-        longitude: "31.039682"
-    },
-    {
-        title: "Dominican Convent School",
-        latitude: "-17.822647",
-        longitude: "31.052042"
-    },
-    {
-        title: "Chop Chop Brazilian Steakhouse",
-        latitude: "-17.819460",
-        longitude: "31.053844"
-    },
-    {
-        title: "Canadian Embassy",
-        latitude: "-17.820972",
-        longitude: "31.043587"
+        title: "kim's coffee",
+        latitude: "21.481995210456603",
+        longitude: "39.2382450551564"
     }
   ];
 
-  constructor() { }
+  constructor(private router: Router, private alert: AlertController) { }
 
-  ngOnInit(){}
+  logOut(){ 
+    this.ConfirmLogOutAlert("Confirm", "You'r about to logout");
+  }
 
   ionViewDidEnter() {
     this.showMap();
@@ -93,7 +77,7 @@ export class SearchPlacePage implements OnInit {
   }
   
   showMap() {
-    const location = new google.maps.LatLng(21.543333, 39.172779);
+    const location = new google.maps.LatLng(21.481995210456603, 39.2382450551564);
     const options = {
       center: location,
       zoom: 15,
@@ -101,6 +85,58 @@ export class SearchPlacePage implements OnInit {
     }
     this.map = new google.maps.Map(this.mapRef.nativeElement, options);
     this.addMarkersToMap(this.markers);
+  }
+
+  async ConfirmLogOutAlert(header: string, message: string){
+    const alert = await this.alert.create({
+      cssClass: 'my-custom-class',
+      header,
+      message, 
+      buttons: [
+       {
+         text: 'OK',
+         handler: () =>{
+           this.router.navigate(["home"]);
+         },
+         cssClass: 'alertButton'
+       },
+        {
+          text: 'Cancel',
+        }
+      ],
+    });
+    await alert.present();
+  }
+
+  navigate(){
+    console.log('navigate button clicked!');
+          // code to navigate using google maps app
+     window.open('https://www.google.com/maps/dir/?api=1&destination=' 
+            + this.markers[0].latitude 
+            + ',' 
+            + this.markers[0].longitude
+            );
+  }
+
+  async setPercentage(){
+    const alert = await this.alert.create({
+      cssClass: 'my-custom-class',
+      header : 'Please set maximum crowdedness percentage',
+      inputs: [
+       {
+        name: 'crowedPercentage',
+        type: 'number',
+        placeholder: 'percentage',
+        cssClass: 'alertInput'
+       },
+      ],
+      buttons: [
+        {
+          text: 'Ok',
+        }
+      ]
+    });
+    await alert.present();
   }
 
 }

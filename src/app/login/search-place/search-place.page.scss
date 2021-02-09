@@ -1,6 +1,20 @@
 
 ion-toolbar{
     --background: #E66F51;
+    margin-left: 0%;
+}
+
+ion-button{
+  margin-top: 14px;
+  --background: #E9C36A;
+}
+
+.my-custom-class{
+  --background: #63254E;
+}
+
+ion-icon{
+  color:  #000;
 }
 
 ion-searchbar{
@@ -42,13 +56,15 @@ ion-searchbar{
   #container a {
     text-decoration: none;
   }
-  
+
   ion-content ion-toolbar {
     --background: translucent;
   }
 
   Strong{
-    font-size: larger;
+    font-size:small;
+    color: #941E30;
+    margin-bottom: auto;
   }
 
   .tabs{

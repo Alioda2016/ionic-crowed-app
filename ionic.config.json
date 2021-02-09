@@ -1,5 +1,7 @@
 {
   "name": "crowed detection app",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
