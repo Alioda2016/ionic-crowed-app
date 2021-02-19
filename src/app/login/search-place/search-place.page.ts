@@ -1,6 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { SharedService } from '../shared.service';
+import { CrowedInfo } from './model';
 
 
 declare var google: any;
@@ -11,14 +13,14 @@ declare var google: any;
   styleUrls: ['./search-place.page.scss'],
 })
 
-export class SearchPlacePage{
+export class SearchPlacePage implements OnInit{
 
   map: any;
 
   @ViewChild('map', {read: ElementRef, static: false}) mapRef: ElementRef;
 
   infoWindows: any = [];
-
+ data: any = {name: 'Kim Coffee', crowdPercentage: 70}
   markers: any = [
     {
         title: "kim's coffee",
@@ -27,7 +29,15 @@ export class SearchPlacePage{
     }
   ];
 
-  constructor(private router: Router, private alert: AlertController) { }
+  constructor(private router: Router, 
+              private alert: AlertController,
+              private sharedService: SharedService) { }
+
+  ngOnInit(){
+    this.sharedService.getCrowedPercentageList().valueChanges().subscribe(res => {
+      console.log(res)
+    })
+  }
 
   logOut(){ 
     this.ConfirmLogOutAlert("Confirm", "You'r about to logout");
@@ -124,7 +134,7 @@ export class SearchPlacePage{
       header : 'Please set maximum crowdedness percentage',
       inputs: [
        {
-        name: 'crowedPercentage',
+        name: 'crowdPercentage',
         type: 'number',
         placeholder: 'percentage',
         cssClass: 'alertInput'
@@ -132,7 +142,11 @@ export class SearchPlacePage{
       ],
       buttons: [
         {
-          text: 'Ok',
+          text: 'Submit',
+          handler: () =>{
+            console.log(document.getElementsByName("crowdPercentage"));
+            
+          }
         }
       ]
     });

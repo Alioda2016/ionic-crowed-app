@@ -4,45 +4,48 @@ import { CrowedInfo } from './search-place/model';
 
 @Injectable({
   providedIn: 'root'
+
 })
 export class SharedService {
 
   crowedPercentageListRef: AngularFireList<any>;
   crowedPercentageRef: AngularFireObject<any>;
 
-  constructor(private db: AngularFireDatabase) { }
+  constructor(private db: AngularFireDatabase) { 
+    this.crowedPercentageListRef = db.list('/crowdInformation');
+  }
 
    // Create
    createCrowedPercentage(apt: CrowedInfo) {
     return this.crowedPercentageListRef.push({
       name: apt.name,
-      crowedPercentage: apt.crowedPercentage,
+      crowedPercentage: apt.crowdPercentage,
     })
   }
 
   // Get Single
-  getBooking(id: string) {
-    this.crowedPercentageRef = this.db.object('/crowedPercentage/' + id);
+  getCrowedPercentage(id: string) {
+    this.crowedPercentageRef = this.db.object('/crowdInformation/' + id);
     return this.crowedPercentageRef;
   }
 
   // Get List
-  getBookingList() {
-    this.crowedPercentageListRef = this.db.list('/crowedPercentage');
+  getCrowedPercentageList() {
+    this.crowedPercentageListRef = this.db.list('/crowdInformation');
     return this.crowedPercentageListRef;
   }
 
   // Update
-  updateBooking(id, apt: CrowedInfo) {
+  updateCrowedPercentage(id, apt: CrowedInfo) {
     return this.crowedPercentageRef.update({
       name: apt.name,
-      crowedPercentage: apt.crowedPercentage,
+      crowedPercentage: apt.crowdPercentage,
     })
   }
 
   // Delete
-  deleteBooking(id: string) {
-    this.crowedPercentageRef = this.db.object('/crowedPercentage/' + id);
+  deleteCrowedPercentage(id: string) {
+    this.crowedPercentageRef = this.db.object('/crowdPercentage/' + id);
     this.crowedPercentageRef.remove();
   }
 }
