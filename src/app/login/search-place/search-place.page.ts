@@ -2,8 +2,13 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { SharedService } from '../shared.service';
-import { CrowedInfo } from './model';
+import { CrowedInfo, User } from './model';
+import { Platform } from '@ionic/angular';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
 
+import { FCM } from '@ionic-native/fcm/ngx';
+import { MaxPercentageService } from '../sign-in/max-percentage.service';
 
 declare var google: any;
 
@@ -20,7 +25,8 @@ export class SearchPlacePage implements OnInit{
   @ViewChild('map', {read: ElementRef, static: false}) mapRef: ElementRef;
 
   infoWindows: any = [];
- data: any = {name: 'Kim Coffee', crowdPercentage: 70}
+  data: any = {name: 'Kim Coffee', crowdPercentage: 70}
+  user: any = {};
   markers: any = [
     {
         title: "kim's coffee",
@@ -31,7 +37,48 @@ export class SearchPlacePage implements OnInit{
 
   constructor(private router: Router, 
               private alert: AlertController,
-              private sharedService: SharedService) { }
+              private sharedService: SharedService,
+              private platform: Platform,
+              private splashScreen: SplashScreen,
+              private statusBar: StatusBar,
+              private maxPercentageService: MaxPercentageService,
+              private fcm: FCM) { 
+                this.initializeApp();
+              }
+
+              initializeApp() {
+                this.platform.ready().then(() => {
+                  this.statusBar.styleDefault();
+                  this.splashScreen.hide();
+            
+                  // subscribe to a topic
+                  // this.fcm.subscribeToTopic('Deals');
+            
+                  // get FCM token
+                  this.fcm.getToken().then(token => {
+                    console.log(token);
+                  });
+            
+                  // ionic push notification example
+                  this.fcm.onNotification().subscribe(data => {
+                    console.log(data);
+                    if (data.wasTapped) {
+                      console.log('Received in background');
+                    } else {
+                      console.log('Received in foreground');
+                    }
+                  });      
+            
+                  // refresh the FCM token
+                  this.fcm.onTokenRefresh().subscribe(token => {
+                    console.log(token);
+                  });
+            
+                  // unsubscribe from a topic
+                  // this.fcm.unsubscribeFromTopic('offers');
+            
+                });
+              }
 
   ngOnInit(){
     this.sharedService.getCrowedPercentageList().valueChanges().subscribe(res => {
@@ -143,8 +190,16 @@ export class SearchPlacePage implements OnInit{
       buttons: [
         {
           text: 'Submit',
-          handler: () =>{
-            console.log(document.getElementsByName("crowdPercentage"));
+          handler: (alertData) =>{
+            let username = this.maxPercentageService.getUsername();
+            console.log(alertData);
+            if(username)
+            this.maxPercentageService.addMaxPercentage(username, alertData.crowdPercentage).then(res =>{
+              console.log(res);
+            }, error =>{
+              console.log(error);
+              
+            })
             
           }
         }

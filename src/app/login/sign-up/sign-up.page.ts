@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { User } from '../search-place/model';
+import { RegisterService } from './register.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -10,7 +12,11 @@ import { AlertController } from '@ionic/angular';
 })
 export class SignUpPage implements OnInit {
 
-  constructor(private afAuth: AngularFireAuth, private alert :AlertController, private router: Router) { }
+  user : any = {};
+  constructor(private afAuth: AngularFireAuth, 
+              private alert :AlertController, 
+              private router: Router,
+              private registerService: RegisterService) { }
 
   ngOnInit() {
   }
@@ -19,11 +25,18 @@ export class SignUpPage implements OnInit {
     if(form.value.password !== form.value.confirmPassword){
       this.showAlert("Error !", "Passwords don't match")
     }
-    console.log(form.value);
     try {
       let email = form.value.username + '@crowed.com';
       let password = form.value.password;
+      this.user = form.value;
+      console.log(this.user);
+      
       const res = await this.afAuth.createUserWithEmailAndPassword(email , password);
+      this.registerService.createUser(this.user).then(res => {
+        console.log(res);
+        form.reset();
+        
+      });
       this.showAlert("Success!", "Welcome aboard");
       this.router.navigate(['/login/sign-in']);
       console.log(res);

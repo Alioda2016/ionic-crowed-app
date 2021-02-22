@@ -8,6 +8,7 @@ import { CrowedInfo } from './search-place/model';
 })
 export class SharedService {
 
+
   crowedPercentageListRef: AngularFireList<any>;
   crowedPercentageRef: AngularFireObject<any>;
 
@@ -45,7 +46,9 @@ export class SharedService {
 
   // Delete
   deleteCrowedPercentage(id: string) {
-    this.crowedPercentageRef = this.db.object('/crowdPercentage/' + id);
+    this.crowedPercentageRef = this.db.object('/crowdInformation/' + id);
     this.crowedPercentageRef.remove();
   }
+
+ 
 }

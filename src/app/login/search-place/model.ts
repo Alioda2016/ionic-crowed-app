@@ -3,3 +3,12 @@ export class CrowedInfo{
     name: string;
     crowdPercentage: number
 }
+
+export class User{
+    maxCrowdPercentage: number;
+    firstName: string;
+    lastName: string;
+    username: string;
+    phoneNumber: string;
+    password: string;
+}

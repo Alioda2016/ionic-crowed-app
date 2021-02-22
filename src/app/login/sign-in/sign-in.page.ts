@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { AuthGuardService } from 'src/app/home/auth-guard.service';
+import { MaxPercentageService } from './max-percentage.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -15,7 +16,8 @@ export class SignInPage implements OnInit {
     private afAuth: AngularFireAuth, 
     private router: Router, 
     private alert: AlertController,
-    private agService: AuthGuardService) { }
+    private agService: AuthGuardService,
+    private maxPercentageService: MaxPercentageService) { }
 
   ngOnInit() {
   }
@@ -27,6 +29,7 @@ export class SignInPage implements OnInit {
       let password = form.value.password;
       const res = await this.afAuth.signInWithEmailAndPassword(email , password);
       this.agService.setAuthInfo(true);
+      this.maxPercentageService.setUsername(form.value.username);
       this.router.navigate(['/login/search-place']);
     }catch (error) {
       console.dir(error);

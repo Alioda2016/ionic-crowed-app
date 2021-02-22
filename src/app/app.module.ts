@@ -12,7 +12,8 @@ import { AngularFireModule } from '@angular/fire';
 import config from './login/firebase';
 import {AngularFireAuthModule} from '@angular/fire/auth';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
-import { AngularFireStorageModule } from '@angular/fire/storage'
+import { AngularFireStorageModule } from '@angular/fire/storage';
+import { FCM } from '@ionic-native/fcm/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -26,6 +27,7 @@ import { AngularFireStorageModule } from '@angular/fire/storage'
   providers: [
     StatusBar,
     SplashScreen,
+    FCM,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
