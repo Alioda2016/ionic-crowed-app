@@ -81,8 +81,12 @@ export class SearchPlacePage implements OnInit{
               }
 
   ngOnInit(){
-    this.sharedService.getCrowedPercentageList().valueChanges().subscribe(res => {
-      console.log(res)
+    this.sharedService.getCrowedPercentageList().valueChanges().subscribe((res: any) => {
+      console.log("res", res);
+      
+      let name = res[0].name;
+      let per = res[0].crowedPercentage;
+      this.showAlert("Notification", "crowd percentage in " + name + " now is: " +  per);
     })
   }
 
@@ -204,6 +208,16 @@ export class SearchPlacePage implements OnInit{
           }
         }
       ]
+    });
+    await alert.present();
+  }
+
+  async showAlert(header: string, message: string){
+    const alert = await this.alert.create({
+      cssClass: 'my-custom-class',
+      header,
+      message, 
+      buttons: ['Ok'],
     });
     await alert.present();
   }
