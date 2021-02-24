@@ -21,7 +21,8 @@ declare var google: any;
 export class SearchPlacePage implements OnInit{
 
   map: any;
-
+  maxPercentage: any ;
+  username: any ;
   @ViewChild('map', {read: ElementRef, static: false}) mapRef: ElementRef;
 
   infoWindows: any = [];
@@ -38,55 +39,36 @@ export class SearchPlacePage implements OnInit{
   constructor(private router: Router, 
               private alert: AlertController,
               private sharedService: SharedService,
-              private platform: Platform,
-              private splashScreen: SplashScreen,
-              private statusBar: StatusBar,
               private maxPercentageService: MaxPercentageService,
-              private fcm: FCM) { 
-                this.initializeApp();
-              }
-
-              initializeApp() {
-                this.platform.ready().then(() => {
-                  this.statusBar.styleDefault();
-                  this.splashScreen.hide();
-            
-                  // subscribe to a topic
-                  // this.fcm.subscribeToTopic('Deals');
-            
-                  // get FCM token
-                  this.fcm.getToken().then(token => {
-                    console.log(token);
-                  });
-            
-                  // ionic push notification example
-                  this.fcm.onNotification().subscribe(data => {
-                    console.log(data);
-                    if (data.wasTapped) {
-                      console.log('Received in background');
-                    } else {
-                      console.log('Received in foreground');
-                    }
-                  });      
-            
-                  // refresh the FCM token
-                  this.fcm.onTokenRefresh().subscribe(token => {
-                    console.log(token);
-                  });
-            
-                  // unsubscribe from a topic
-                  // this.fcm.unsubscribeFromTopic('offers');
-            
-                });
+              ) { 
               }
 
   ngOnInit(){
+
     this.sharedService.getCrowedPercentageList().valueChanges().subscribe((res: any) => {
-      console.log("res", res);
+      console.log("res: ", res);
       
       let name = res[0].name;
       let per = res[0].crowedPercentage;
-      this.showAlert("Notification", "crowd percentage in " + name + " now is: " +  per);
+
+      this.username = this.maxPercentageService.getUsername();
+      this.maxPercentageService.getMaxPercentage(this.username).valueChanges().subscribe((resss: any) =>{
+      console.log("resss: ", resss);
+      var prop ;
+      for (prop in resss) {
+        console.log("looping object: ", prop);
+        console.log("looping object value: ", resss.prop);
+        
+        if(prop == this.username){
+          this.maxPercentage = prop.max_percentage;
+        }
+    }
+      console.log("maxPercentage: ", this.maxPercentage); 
+
+      });
+
+      if(per >= this.maxPercentage)
+      {this.showAlert("Notification", "crowd percentage in " + name + " now is: " +  per);}
     })
   }
 
@@ -195,10 +177,10 @@ export class SearchPlacePage implements OnInit{
         {
           text: 'Submit',
           handler: (alertData) =>{
-            let username = this.maxPercentageService.getUsername();
+            this.username = this.maxPercentageService.getUsername();
             console.log(alertData);
-            if(username)
-            this.maxPercentageService.addMaxPercentage(username, alertData.crowdPercentage).then(res =>{
+            if(this.username)
+            this.maxPercentageService.addMaxPercentage(this.username, alertData.crowdPercentage).then(res =>{
               console.log(res);
             }, error =>{
               console.log(error);

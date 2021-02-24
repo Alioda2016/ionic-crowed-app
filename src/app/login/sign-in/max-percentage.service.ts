@@ -16,9 +16,13 @@ export class MaxPercentageService {
 
    public addMaxPercentage(username, value){
      return this.maxPercentageListRef.set(username, {
-       username: username,
        max_percentage: value
      }) 
+    }
+
+   public getMaxPercentage(username){
+      this.maxPercentageRef = this.db.object('/max_percentage/' + username);
+      return this.maxPercentageRef;
     }
 
     getUsername(){

@@ -5,10 +5,14 @@ export class CrowedInfo{
 }
 
 export class User{
-    maxCrowdPercentage: number;
     firstName: string;
     lastName: string;
     username: string;
     phoneNumber: string;
     password: string;
+}
+
+export class MaxPercentage{
+    key: string;
+    maxCrowdPercentage: number;
 }
