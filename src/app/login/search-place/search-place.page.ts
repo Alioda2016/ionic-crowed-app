@@ -50,23 +50,21 @@ export class SearchPlacePage implements OnInit{
       
       let name = res[0].name;
       let per = res[0].crowedPercentage;
+      console.log("per", per);
+      
 
       this.username = this.maxPercentageService.getUsername();
-      this.maxPercentageService.getMaxPercentage(this.username).valueChanges().subscribe((resss: any) =>{
-      console.log("resss: ", resss);
-      var prop ;
-      for (prop in resss) {
-        console.log("looping object: ", prop);
-        console.log("looping object value: ", resss.prop);
-        
-        if(prop == this.username){
-          this.maxPercentage = prop.max_percentage;
+      console.log("usename", this.username);
+      
+      this.maxPercentageService.getMaxPercentage(this.username).valueChanges().subscribe(resss =>{
+        for(name in resss){
+            if(this.username == name){
+              this.maxPercentage = resss[name].max_percentage; 
+            }        
         }
-    }
-      console.log("maxPercentage: ", this.maxPercentage); 
-
       });
-
+      
+      console.log("max", this.maxPercentage); 
       if(per >= this.maxPercentage)
       {this.showAlert("Notification", "crowd percentage in " + name + " now is: " +  per);}
     })
