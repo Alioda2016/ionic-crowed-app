@@ -58,15 +58,15 @@ export class SearchPlacePage implements OnInit{
       
       this.maxPercentageService.getMaxPercentage(this.username).valueChanges().subscribe(resss =>{
         for(name in resss){
-            if(this.username == name){
+            if(name === this.username){
               this.maxPercentage = resss[name].max_percentage; 
             }        
         }
       });
       
       console.log("max", this.maxPercentage); 
-      if(per >= this.maxPercentage)
-      {this.showAlert("Notification", "crowd percentage in " + name + " now is: " +  per);}
+  //    if(per >= this.maxPercentage)
+      this.showAlert("Notification", "crowd percentage in " + name + " now is: " +  per);
     })
   }
 
@@ -119,6 +119,7 @@ export class SearchPlacePage implements OnInit{
   
   showMap() {
     const location = new google.maps.LatLng(21.481995210456603, 39.2382450551564);
+    
     const options = {
       center: location,
       zoom: 15,
