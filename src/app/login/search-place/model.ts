@@ -10,6 +10,7 @@ export class User{
     username: string;
     phoneNumber: string;
     password: string;
+    maxCrowdPercentage: number;
 }
 
 export class MaxPercentage{

@@ -48,25 +48,34 @@ export class SearchPlacePage implements OnInit{
     this.sharedService.getCrowedPercentageList().valueChanges().subscribe((res: any) => {
       console.log("res: ", res);
       
-      let name = res[0].name;
+      let name = res[0].name; // restaurent name
       let per = res[0].crowedPercentage;
-      console.log("per", per);
+      console.log("name", name);
       
 
       this.username = this.maxPercentageService.getUsername();
       console.log("usename", this.username);
       
       this.maxPercentageService.getMaxPercentage(this.username).valueChanges().subscribe(resss =>{
-        for(name in resss){
-            if(name === this.username){
-              this.maxPercentage = resss[name].max_percentage; 
-            }        
+        var key;
+        console.log("resss", resss);
+        for(key in resss){
+            console.log("key: ", key);
+            
+            if(key === this.username){
+              this.maxPercentage = resss[key].max_percentage; 
+              console.log("max", this.maxPercentage);
+            } else if(key == 'max_percentage')  {
+              this.maxPercentage = resss.max_percentage; 
+              console.log("max", this.maxPercentage);
+            }     
         }
       });
       
-      console.log("max", this.maxPercentage); 
-  //    if(per >= this.maxPercentage)
+       
+    if(per >= this.maxPercentage){
       this.showAlert("Notification", "crowd percentage in " + name + " now is: " +  per);
+    }
     })
   }
 
