@@ -6,9 +6,10 @@ import { CrowedInfo, User } from './model';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-
+import * as firebase from "firebase";
 import { FCM } from '@ionic-native/fcm/ngx';
 import { MaxPercentageService } from '../sign-in/max-percentage.service';
+import { AngularFireDatabase, AngularFireList, AngularFireObject } from '@angular/fire/database';
 
 declare var google: any;
 
@@ -22,10 +23,14 @@ export class SearchPlacePage implements OnInit{
 
   map: any;
   maxPercentage: any ;
+  maxPercentageListRef: AngularFireList<any>;
+  maxPercentageRef: AngularFireObject<any>;
   username: any ;
   @ViewChild('map', {read: ElementRef, static: false}) mapRef: ElementRef;
 
   infoWindows: any = [];
+  searchedPlaces = [];
+  showTabs = false;
   data: any = {name: 'Kim Coffee', crowdPercentage: 70}
   user: any = {};
   markers: any = [
@@ -40,7 +45,9 @@ export class SearchPlacePage implements OnInit{
               private alert: AlertController,
               private sharedService: SharedService,
               private maxPercentageService: MaxPercentageService,
+              private db: AngularFireDatabase
               ) { 
+               // this.maxPercentageListRef = db.list('/crowdInformation');
               }
 
   ngOnInit(){
@@ -81,6 +88,41 @@ export class SearchPlacePage implements OnInit{
 
   logOut(){ 
     this.ConfirmLogOutAlert("Confirm", "You'r about to logout");
+  }
+
+
+  search(evt){
+    var key: string = evt.target.value;
+    var lowerCaseKey = key.toLowerCase(); 
+    if (lowerCaseKey.length > 0) {
+          this.db.database.ref("crowdInformation").orderByChild("name").startAt(lowerCaseKey).endAt(lowerCaseKey + "\uf8ff").once("value", snapshot => {
+          this.searchedPlaces = [];
+          snapshot.forEach(childSnap => {
+            this.searchedPlaces.push(childSnap.val());
+            console.log(this.searchedPlaces);
+            
+          })
+        })
+    }
+    else {
+      this.searchedPlaces = [];
+      this.showMap();
+      this.showTabs = !this.showTabs;
+    }   
+  }
+
+  showPlace(placeName){
+    console.log(placeName);
+    const location = new google.maps.LatLng(21.481995210456603, 39.2382450551564);
+    
+    const options = {
+      center: location,
+      zoom: 20,
+      disableDefaultUI: true
+    }
+    this.map = new google.maps.Map(this.mapRef.nativeElement, options);
+    this.addMarkersToMap(this.markers);
+    this.showTabs = !this.showTabs;
   }
 
   ionViewDidEnter() {
@@ -131,11 +173,11 @@ export class SearchPlacePage implements OnInit{
     
     const options = {
       center: location,
-      zoom: 15,
+      zoom: 12,
       disableDefaultUI: true
     }
     this.map = new google.maps.Map(this.mapRef.nativeElement, options);
-    this.addMarkersToMap(this.markers);
+   // this.addMarkersToMap(this.markers);
   }
 
   async ConfirmLogOutAlert(header: string, message: string){

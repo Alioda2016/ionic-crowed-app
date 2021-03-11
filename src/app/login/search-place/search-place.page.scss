@@ -18,11 +18,17 @@ ion-icon{
 }
 
 ion-searchbar{
-    --background: #E9C36A;
-    color: #000000;
+  --background: #E9C36A;
+  color: #000000;
     margin-left: 0;
     margin-right: 0;
     margin-top: 10px;
+}
+
+ion-item{
+  --background: #E9C36A;
+    color: #000000;
+    margin-right: 10;
 }
 
 #map {
