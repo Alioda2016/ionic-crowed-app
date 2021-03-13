@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "905110734192",
+    "firebase_url": "https://crowed-detection-app-default-rtdb.firebaseio.com",
+    "project_id": "crowed-detection-app",
+    "storage_bucket": "crowed-detection-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:905110734192:android:c80bf4b5b771c13ee33bb5",
+        "android_client_info": {
+          "package_name": "io.ionic.starter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "905110734192-mqk7ht4fj6fb6oj3bq9uqcmvsv0nm0dn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaaq7keHLOMrFv3NeIloyQ-nZUH9P-lCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "905110734192-mqk7ht4fj6fb6oj3bq9uqcmvsv0nm0dn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "905110734192-8ajqsa09q3799kkeus4fvi69se00e7p9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.ionic.starter"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,15 +1,11 @@
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, NavController, PopoverController, ToastController } from '@ionic/angular';
 import { SharedService } from '../shared.service';
-import { CrowedInfo, User } from './model';
-import { Platform } from '@ionic/angular';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
-import * as firebase from "firebase";
-import { FCM } from '@ionic-native/fcm/ngx';
 import { MaxPercentageService } from '../sign-in/max-percentage.service';
 import { AngularFireDatabase, AngularFireList, AngularFireObject } from '@angular/fire/database';
+import { NativeGeocoder, NativeGeocoderOptions, NativeGeocoderResult } from '@ionic-native/native-geocoder/ngx';
 
 declare var google: any;
 
@@ -27,17 +23,20 @@ export class SearchPlacePage implements OnInit{
   maxPercentageRef: AngularFireObject<any>;
   username: any ;
   @ViewChild('map', {read: ElementRef, static: false}) mapRef: ElementRef;
-
+  // @ViewChild('mapRef', {read: ElementRef, static: false}) mapRef1: ElementRef;
+  circles = {};
   infoWindows: any = [];
   searchedPlaces = [];
+  targetPlace:any = {name: 'coffee', crowedPercentage: 30};
+  address: string;
   showTabs = false;
   data: any = {name: 'Kim Coffee', crowdPercentage: 70}
   user: any = {};
   markers: any = [
     {
         title: "kim's coffee",
-        latitude: "21.481995210456603",
-        longitude: "39.2382450551564"
+        latitude: 21.481995210456603,
+        longitude: 39.2382450551564
     }
   ];
 
@@ -45,7 +44,13 @@ export class SearchPlacePage implements OnInit{
               private alert: AlertController,
               private sharedService: SharedService,
               private maxPercentageService: MaxPercentageService,
-              private db: AngularFireDatabase
+              private db: AngularFireDatabase,
+              private geolocation: Geolocation,
+              private nativeGeocoder: NativeGeocoder,
+              public navCtrl: NavController,
+              public toastController: ToastController,
+              public popoverController: PopoverController
+              
               ) { 
                // this.maxPercentageListRef = db.list('/crowdInformation');
               }
@@ -107,7 +112,7 @@ export class SearchPlacePage implements OnInit{
     else {
       this.searchedPlaces = [];
       this.showMap();
-      this.showTabs = !this.showTabs;
+      this.showTabs = false;
     }   
   }
 
@@ -117,12 +122,31 @@ export class SearchPlacePage implements OnInit{
     
     const options = {
       center: location,
-      zoom: 20,
-      disableDefaultUI: true
+      zoom: 15,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      disableDefaultUI: false
     }
     this.map = new google.maps.Map(this.mapRef.nativeElement, options);
     this.addMarkersToMap(this.markers);
-    this.showTabs = !this.showTabs;
+
+    this.sharedService.getCrowedPercentageList().valueChanges().subscribe((res: any) => {
+      console.log("res: ", res);
+      let targets:any;
+      targets = res;
+      targets.forEach(elem=>{
+        if(elem.name == placeName){
+          this.targetPlace = elem;
+          console.log("target place: ", this.targetPlace);
+          // this.getAddressFromCoords(this.markers[0].lattitude, this.markers[0].longitude);
+          console.log("address", this.address);
+          
+        }
+      })
+      
+    });
+    
+    if(placeName)
+    {this.showTabs = true;}
   }
 
   ionViewDidEnter() {
@@ -134,32 +158,26 @@ export class SearchPlacePage implements OnInit{
       let position = new google.maps.LatLng(marker.latitude, marker.longitude);
       let mapMarker = new google.maps.Marker({
         position: position,
-        title: marker.title,
-        latitude: marker.latitude,
-        longitude: marker.longitude
+        map : this.map
       });
 
       mapMarker.setMap(this.map);
-      this.addInfoWindowToMarker(mapMarker);
     }
   }
 
-  addInfoWindowToMarker(marker) {
-    let infoWindowContent = '<div id="content">' +
-                              '<h2 id="firstHeading" class"firstHeading">' + marker.title + '</h2>' +
-                              '<p>Latitude: ' + marker.latitude + '</p>' +
-                              '<p>Longitude: ' + marker.longitude + '</p>' +
-                            '</div>';
-
-    let infoWindow = new google.maps.InfoWindow({
-      content: infoWindowContent
-    });
-
-    marker.addListener('click', () => {
-      this.closeAllInfoWindows();
-      infoWindow.open(this.map, marker);
-    });
-    this.infoWindows.push(infoWindow);
+  showMarker(person: any) {
+    const marker = this.markers[person.uuid];
+    const circle = this.circles[person.uuid];
+    if (marker.isVisible()) {
+      marker.hideInfoWindow();
+      marker.setVisible(false);
+      circle.setVisible(false);
+    } else {
+      marker.showInfoWindow();
+      marker.setVisible(true);
+      circle.setVisible(true);
+    }
+    this.map.setAllGesturesEnabled(true);
   }
 
   closeAllInfoWindows() {
@@ -174,7 +192,7 @@ export class SearchPlacePage implements OnInit{
     const options = {
       center: location,
       zoom: 12,
-      disableDefaultUI: true
+      disableDefaultUI: false
     }
     this.map = new google.maps.Map(this.mapRef.nativeElement, options);
    // this.addMarkersToMap(this.markers);
@@ -201,7 +219,7 @@ export class SearchPlacePage implements OnInit{
     await alert.present();
   }
 
-  navigate(){
+  direct(){
     console.log('navigate button clicked!');
           // code to navigate using google maps app
      window.open('https://www.google.com/maps/dir/?api=1&destination=' 
@@ -210,6 +228,47 @@ export class SearchPlacePage implements OnInit{
             + this.markers[0].longitude
             );
   }
+
+  navigateTo(){
+    this.startNavigating();
+  }
+
+  startNavigating(){
+
+    let directionsService = new google.maps.DirectionsService;
+    let directionsDisplay = new google.maps.DirectionsRenderer;
+
+    directionsDisplay.setMap(this.map);
+    // directionsDisplay.setPanel(this.mapRef1.nativeElement);
+
+    this.geolocation.getCurrentPosition().then((resp) => {
+      // resp.coords.latitude
+      // resp.coords.longitude
+      directionsService.route({
+        origin: {lat: resp.coords.latitude, lng: resp.coords.longitude},
+        destination: {lat: this.markers[0].latitude, lng: this.markers[0].longitude},
+        travelMode: google.maps.TravelMode['DRIVING']
+    }, (res, status) => {
+
+        if(status == google.maps.DirectionsStatus.OK){
+            directionsDisplay.setDirections(res);
+        } else {
+            console.warn(status);
+        }
+
+    });
+     }).catch((error) => {
+       console.log('Error getting location', error);
+     });
+     
+     let watch = this.geolocation.watchPosition();
+     watch.subscribe((data) => {
+      // data can be a set of coordinates, or an error (if an error occurred).
+      // data.coords.latitude
+      // data.coords.longitude
+     });
+
+}
 
   async setPercentage(){
     const alert = await this.alert.create({
@@ -230,8 +289,9 @@ export class SearchPlacePage implements OnInit{
             this.username = this.maxPercentageService.getUsername();
             console.log(alertData);
             if(this.username)
-            this.maxPercentageService.addMaxPercentage(this.username, alertData.crowdPercentage).then(res =>{
+            this.maxPercentageService.addMaxPercentage(this.username, alertData.crowdPercentage).then((res: any) =>{
               console.log(res);
+              this.presentToast("Successfully Your Maximum Percentage Added")
             }, error =>{
               console.log(error);
               
@@ -244,6 +304,17 @@ export class SearchPlacePage implements OnInit{
     await alert.present();
   }
 
+  async presentToast(msg) {
+    const toast = await this.toastController.create({
+      cssClass: 'toast-class',
+      message: msg,
+      duration: 3000,
+      position: "middle",
+      animated: true,
+    });
+    toast.present();
+  }
+
   async showAlert(header: string, message: string){
     const alert = await this.alert.create({
       cssClass: 'my-custom-class',
@@ -252,6 +323,34 @@ export class SearchPlacePage implements OnInit{
       buttons: ['Ok'],
     });
     await alert.present();
+  }
+
+  getAddressFromCoords(lattitude, longitude) {
+    console.log("getAddressFromCoords " + lattitude + " " + longitude);
+    let options: NativeGeocoderOptions = {
+      useLocale: true,
+      maxResults: 5
+    };
+
+    this.nativeGeocoder.reverseGeocode(lattitude, longitude, options)
+      .then((result: NativeGeocoderResult[]) => {
+        this.address = "";
+        let responseAddress = [];
+        for (let [key, value] of Object.entries(result[0])) {
+          if (value.length > 0)
+            responseAddress.push(value);
+
+        }
+        responseAddress.reverse();
+        for (let value of responseAddress) {
+          this.address += value + ", ";
+        }
+        this.address = this.address.slice(0, -2);
+      })
+      .catch((error: any) => {
+        this.address = "Address Not Available!";
+      });
+
   }
 
 }
