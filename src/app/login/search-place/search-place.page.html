@@ -7,10 +7,17 @@
     <ion-searchbar animated placeholder="Search for place..." 
                     debounce=500 (ionChange)="search($event)">
     </ion-searchbar>
-    <ion-item detail lines="full" *ngFor="let place of searchedPlaces" (click)="showPlace(place.name)">
+    <ion-item detail lines="full" *ngFor="let place of searchedPlaces; let i = index" (click)="showPlace(place.name)">
       <ion-label>
         <h2>
           {{place.name}}
+        </h2>
+      </ion-label>
+    </ion-item>
+    <ion-item [hidden]="!status">
+      <ion-label>
+        <h2>
+          the place you search not found
         </h2>
       </ion-label>
     </ion-item>
@@ -28,9 +35,9 @@
   <ion-item-group>
     <ion-item>
       <ion-label class="ion-text-wrap">
+        <ion-icon name="people" size="small"></ion-icon>
         <ion-text>
-          <ion-icon name="people" size="small"></ion-icon>
-          Crowd Percentage In {{targetPlace.name}} now: {{targetPlace.crowedPercentage}}
+          The Crowd Percentage In {{targetPlace.name}} now is: {{targetPlace.crowedPercentage}} %
         </ion-text>
       </ion-label>
     </ion-item>
@@ -38,16 +45,16 @@
       <ion-tabs>
         <ion-tab-bar  class="tabs">
           <ion-tab-button (click)="direct()">
-            <ion-icon name="play-forward" size="small"></ion-icon>
+            <ion-icon name="play-forward" size="medium"></ion-icon>
             <Strong>Direction</Strong>
           </ion-tab-button>
-          <ion-tab-button (click)="navigateTo()">
+          <!-- <ion-tab-button (click)="navigateTo()">
             <ion-icon name="navigate" size="small"></ion-icon>
             <Strong>Navigation</Strong>
-          </ion-tab-button>
+          </ion-tab-button> -->
       
           <ion-tab-button (click)="setPercentage()">
-            <ion-icon name="people" size="small"></ion-icon>
+            <ion-icon name="people" size="medium"></ion-icon>
             <Strong>Percentage</Strong>
           </ion-tab-button>
         </ion-tab-bar>

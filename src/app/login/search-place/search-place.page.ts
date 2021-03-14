@@ -25,6 +25,7 @@ export class SearchPlacePage implements OnInit{
   @ViewChild('map', {read: ElementRef, static: false}) mapRef: ElementRef;
   // @ViewChild('mapRef', {read: ElementRef, static: false}) mapRef1: ElementRef;
   circles = {};
+  status: boolean =false;
   infoWindows: any = [];
   searchedPlaces = [];
   targetPlace:any = {name: 'coffee', crowedPercentage: 30};
@@ -102,17 +103,17 @@ export class SearchPlacePage implements OnInit{
     if (lowerCaseKey.length > 0) {
           this.db.database.ref("crowdInformation").orderByChild("name").startAt(lowerCaseKey).endAt(lowerCaseKey + "\uf8ff").once("value", snapshot => {
           this.searchedPlaces = [];
+          if(!snapshot.exists()) { this.status = true;}
           snapshot.forEach(childSnap => {
-            this.searchedPlaces.push(childSnap.val());
-            console.log(this.searchedPlaces);
-            
-          })
-        })
+            this.searchedPlaces.push(childSnap.val());            
+          });
+        });
     }
     else {
       this.searchedPlaces = [];
       this.showMap();
       this.showTabs = false;
+      this.status = false;
     }   
   }
 
@@ -286,17 +287,21 @@ export class SearchPlacePage implements OnInit{
         {
           text: 'Submit',
           handler: (alertData) =>{
-            this.username = this.maxPercentageService.getUsername();
-            console.log(alertData);
-            if(this.username)
-            this.maxPercentageService.addMaxPercentage(this.username, alertData.crowdPercentage).then((res: any) =>{
-              console.log(res);
-              this.presentToast("Successfully Your Maximum Percentage Added")
-            }, error =>{
-              console.log(error);
-              
-            })
-            
+            if (alertData >= 0 && alertData <= 100) {
+              this.username = this.maxPercentageService.getUsername();
+              console.log(alertData);
+              if(this.username)
+              this.maxPercentageService.addMaxPercentage(this.username, alertData.crowdPercentage).then((res: any) =>{
+                console.log(res);
+                this.presentToast("Successfully, Maximum Percentage Added")
+              }, error =>{
+                console.log(error);
+                
+              });
+            } else {
+              this.presentToast('Percentage Must be between 0 and 100');
+              return false;
+            }
           }
         }
       ]
