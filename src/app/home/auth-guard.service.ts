@@ -8,7 +8,7 @@ export class AuthGuardService implements CanActivate {
 
    
    authInfo =  {
-    authenticated: true
+    authenticated: false
   };
 
   constructor(private router: Router) { }

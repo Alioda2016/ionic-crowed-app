@@ -287,7 +287,7 @@ export class SearchPlacePage implements OnInit{
         {
           text: 'Submit',
           handler: (alertData) =>{
-            if (alertData >= 0 && alertData <= 100) {
+            if (alertData.crowdPercentage >= 0 && alertData.crowdPercentage <= 100) {
               this.username = this.maxPercentageService.getUsername();
               console.log(alertData);
               if(this.username)
@@ -298,6 +298,7 @@ export class SearchPlacePage implements OnInit{
                 console.log(error);
                 
               });
+              return true
             } else {
               this.presentToast('Percentage Must be between 0 and 100');
               return false;
@@ -314,7 +315,7 @@ export class SearchPlacePage implements OnInit{
       cssClass: 'toast-class',
       message: msg,
       duration: 3000,
-      position: "middle",
+      position: "top",
       animated: true,
     });
     toast.present();
